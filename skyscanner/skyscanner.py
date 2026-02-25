@@ -87,6 +87,19 @@ class SkyScanner:
             verify=verify,
         )
 
+    def _handle_captcha_403(self, req):
+        try:
+            data = req.json()
+            redirect_path = data.get("redirect_to")
+
+            url = "https://www.skyscanner.net"
+            if redirect_path:
+                url += redirect_path
+
+            raise BannedWithCaptcha(url)
+        except Exception:
+            raise BannedWithCaptcha("https://www.skyscanner.net")
+
     @typechecked
     def get_flight_prices(
         self,
@@ -166,13 +179,14 @@ class SkyScanner:
             "Content-Type": "application/json; charset=UTF-8",
             "Accept-Encoding": "gzip, deflate, br",
         }
+        
         req = self.session.post(
             config.UNIFIED_SEARCH_ENDPOINT, json=json_data, headers=custom_headers
         )
+        
         if req.status_code == 403:
-            raise BannedWithCaptcha(
-                "https://www.skyscanner.net" + req.json()["redirect_to"]
-            )
+            self._handle_captcha_403(req)
+            
         data = orjson.loads(req.content)
 
         if data["context"]["status"] == "complete":
@@ -194,7 +208,7 @@ class SkyScanner:
             data = orjson.loads(req.content)
 
             if req.status_code != 200:
-                raise (
+                raise GenericError(
                     f"Error while scraping flight, status_code: {req.status_code} response: {req.text}"
                 )
 
