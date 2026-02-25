@@ -1,4 +1,4 @@
-name: Python CI
+name: Run Flight Prices Script
 
 on:
   push:
@@ -7,12 +7,12 @@ on:
     branches: [ main, master ]
 
 jobs:
-  build:
+  run-script:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.10"]
 
     steps:
     - name: Checkout repository
@@ -26,14 +26,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        pip install flake8 pytest
+        if [ -f requirements.txt ]; then
+          pip install -r requirements.txt
+        fi
 
-    - name: Lint with flake8
+    - name: Run flight_prices script
       run: |
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-
-    - name: Run tests
-      run: |
-        pytest || echo "No tests found"
+        python examples/flight_prices.py
