@@ -5,14 +5,14 @@ import json
 
 scanner = SkyScanner()
 
-JFK = scanner.get_airport_by_code('JFK')
-MXP = scanner.get_airport_by_code('MXP')
+JFK = scanner.get_airport_by_code('ist')
+MXP = scanner.get_airport_by_code('tyoa')
 
 prices = scanner.get_flight_prices(
     origin=JFK,
     destination=MXP,
-    depart_date=datetime.datetime(2025, 9, 20, 10, 0),
-    return_date=datetime.datetime(2025, 9, 25, 10, 0),
+    depart_date=datetime.datetime(2026, 6, 1, 10, 0),
+    return_date=datetime.datetime(2026, 6, 11, 10, 0),
     adults=5,
     childAges=[9,13],
     cabinClass=CabinClass.FIRST
