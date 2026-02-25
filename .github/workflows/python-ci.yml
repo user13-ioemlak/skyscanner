@@ -33,4 +33,4 @@ jobs:
 
     - name: Run flight_prices script
       run: |
-        python examples/flight_prices.py
+        python app.py
